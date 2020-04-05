@@ -2,24 +2,24 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
 
-func home(w http.ResponseWriter, r *http.Request) {
+func home(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Content-Type", "text/html")
 
 	_, _ = fmt.Fprint(w, "<h1>Welcome to the site!</h1>")
 }
 
-func contact(w http.ResponseWriter, r *http.Request) {
+func contact(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Content-Type", "text/html")
 
 	_, _ = fmt.Fprint(w, "To get in touch, please send an email to "+
 		"<a href=\"mailto:support@lenslocked.com\">support@lenslocked.com</a>.")
 }
 
-func faq(w http.ResponseWriter, r *http.Request) {
+func faq(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Content-Type", "text/html")
 
 	_, _ = fmt.Fprint(w, "<h1>Frequently Asked Questions</h1>" +
@@ -35,11 +35,12 @@ func notFound(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	router := mux.NewRouter()
-	router.HandleFunc("/", home)
-	router.HandleFunc("/contact", contact)
-	router.HandleFunc("/faq", faq)
-	router.NotFoundHandler = http.HandlerFunc(notFound)
+	router := httprouter.New()
+
+	router.GET("/", home)
+	router.GET("/contact", contact)
+	router.GET("/faq", faq)
+	router.NotFound = http.HandlerFunc(notFound)
 
 	_ = http.ListenAndServe(":3000", router)
 }
