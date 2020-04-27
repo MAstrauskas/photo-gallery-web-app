@@ -9,8 +9,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var homeView *views.View
-var contactView *views.View
+var (
+	homeView    *views.View
+	contactView *views.View
+	signupView  *views.View
+)
 
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
@@ -22,6 +25,12 @@ func contact(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
 	must(contactView.Render(w, nil))
+}
+
+func signup(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+
+	must(signupView.Render(w, nil))
 }
 
 func faq(w http.ResponseWriter, r *http.Request) {
@@ -48,10 +57,12 @@ func main() {
 		"bootstrap",
 		"views/contact.gohtml",
 	)
+	signupView = views.NewView("bootstrap", "views/signup.gohtml")
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", home)
 	router.HandleFunc("/contact", contact)
+	router.HandleFunc("/signup", signup)
 	router.HandleFunc("/faq", faq)
 	router.NotFoundHandler = http.HandlerFunc(notFound)
 
