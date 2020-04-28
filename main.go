@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"lenslocked.com/controllers"
+
 	"lenslocked.com/views"
 
 	"github.com/gorilla/mux"
@@ -12,7 +14,6 @@ import (
 var (
 	homeView    *views.View
 	contactView *views.View
-	signupView  *views.View
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
@@ -25,12 +26,6 @@ func contact(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
 	must(contactView.Render(w, nil))
-}
-
-func signup(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-
-	must(signupView.Render(w, nil))
 }
 
 func faq(w http.ResponseWriter, r *http.Request) {
@@ -57,12 +52,13 @@ func main() {
 		"bootstrap",
 		"views/contact.gohtml",
 	)
-	signupView = views.NewView("bootstrap", "views/signup.gohtml")
+
+	usersC := controllers.NewUsers()
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", home)
 	router.HandleFunc("/contact", contact)
-	router.HandleFunc("/signup", signup)
+	router.HandleFunc("/signup", usersC.New)
 	router.HandleFunc("/faq", faq)
 	router.NotFoundHandler = http.HandlerFunc(notFound)
 
